@@ -1,0 +1,173 @@
+<?xml version='1.0'?>
+<parameters version="1.0" creator="ndManager-">
+ <generalInfo>
+  <date>2017-08-31</date>
+  <experimenters>NA</experimenters>
+  <description>NA</description>
+  <notes/>
+ </generalInfo>
+ ACQHEREFILLIN
+ LFPHEREFILLIN
+ <files>
+  FILHEREFILLIN
+ </files>
+ <anatomicalDescription>
+  <channelGroups>
+   CHANGRPFILLIN
+  </channelGroups>
+ </anatomicalDescription>
+ <spikeDetection>
+  <channelGroups>
+   SPKGRPFILLIN
+  </channelGroups>
+ </spikeDetection>
+ <units>
+ </units>
+ <programs>
+  <program>
+   <name>ndm_extractspikes</name>
+   <parameters>
+    <parameter>
+     <name>thresholdFactor</name>
+     <value>1.5</value>
+     <status>Mandatory</status>
+    </parameter>
+    <parameter>
+     <name>refractoryPeriod</name>
+     <value>0</value>
+     <status>Mandatory</status>
+    </parameter>
+    <parameter>
+     <name>peakSearchLength</name>
+     <value>32</value>
+     <status>Mandatory</status>
+    </parameter>
+    <parameter>
+     <name>start</name>
+     <value>0</value>
+     <status>Mandatory</status>
+    </parameter>
+    <parameter>
+     <name>duration</name>
+     <value>60</value>
+     <status>Mandatory</status>
+    </parameter>
+   </parameters>
+   <help>Extract spikes from high-pass filtered .fil file (this creates .res and .spk files).
+
+First, the program automatically computes a baseline 'noise' level, using a subset of the data. Then, spikes are extracted whenever the signal crosses a threshold proportional to the baseline 'noise' level. To avoid spurious detections, the signal must have a local maximum (or minimum, depending on the sign of the signal) within a fixed search window starting at threshold crossing. Also, the duration between consecutive spikes must be greater than a fixed 'refractory' period.
+
+PARAMETERS
+
+# thresholdFactor
+
+Threshold = thresholdFactor * baseline 'noise' level
+
+# refractoryPeriod
+
+Number of samples to skip after a spike, before trying to detect a new spike
+
+# peakSearchLength
+
+Length of the peak search window (in number of samples)
+
+# start
+
+Starting point in the file (in s) for computation of baseline 'noise' level
+
+# duration
+
+Duration (in s) for computation of baseline 'noise' level
+</help>
+  </program>
+  <program>
+   <name>ndm_pca</name>
+   <parameters>
+    <parameter>
+     <name>before</name>
+     <value>4</value>
+     <status>Mandatory</status>
+    </parameter>
+    <parameter>
+     <name>after</name>
+     <value>4</value>
+     <status>Mandatory</status>
+    </parameter>
+    <parameter>
+     <name>extra</name>
+     <value>true</value>
+     <status>Mandatory</status>
+    </parameter>
+   </parameters>
+   <help>Compute principal component analysis (PCA).
+
+PARAMETERS
+
+All mandatory parameters are defined in the 'Acquisition System' and 'Spike Groups' tab.
+
+OPTIONAL PARAMETERS
+
+# before
+
+Number of samples before the peak to use for the PCA. This can be either a space-separated list of numbers (one per electrode group), or a single common number for all groups.
+
+# after
+
+Number of samples after the peak to use for the PCA. This can be either a space-separated list of numbers (one per electrode group), or a single common number for all groups.
+
+# extra
+
+Whether extra features (spike peak value) should be included in the output files.</help>
+  </program>
+  <program>
+   <name>ndm_start</name>
+   <parameters>
+    <parameter>
+     <name>suffixes</name>
+     <value>dat</value>
+     <status>Mandatory</status>
+    </parameter>
+   </parameters>
+   <help>Perform all processing steps for a multiple sets of multiple-session recordings: format conversion, channel extraction and reordering, video transcoding and tracking, data concatenation, spike detection and extraction, etc.
+
+PARAMETERS
+
+# suffixes
+
+List of suffixes for the individual files to convert
+
+OPTIONAL PARAMETERS
+
+Note: To keep the interface simpler, optional parameters have default values and are not listed in the 'Parameters' tab; to choose custom values, click the 'Add' button and manually add the required parameters (and custom values) to the list.
+
+# wideband
+
+Process the wideband data files recorded by the acquisition system: convert to .dat format, resample, merge, extract and reorder channels (default = true)
+
+# video
+
+Process video files recorded by the acquisition system: transcode and extract LEDs (default = true)
+
+# events
+
+Process event files recorded by the acquisition system: convert to .evt format and rename events (default = true)
+
+# spikes
+
+Process spikes: detect and extract spike waveforms, perform PCA (default = true)
+
+# lfp
+
+Downsample wideband signals to produce LFP files (default = true)
+
+# clean
+
+Remove intermediate files after pre-processing is complete (default = false)
+
+# log
+
+Save progress information to log files for later review (use 'cat' or 'less -R' for correct formatting) (default = false)
+</help>
+  </program>
+ </programs>
+</parameters>
