@@ -68,7 +68,9 @@ function ProcessRawRecordingKilosort(selDir, procConfig)
         prb = regexp(baseName, 'imec([0-7])','tokens');
         prb = prb{1}{1};
         if isempty(procConfig.NP2Datmap)
-            procConfig.NP2Datmap.ArtifactRemove = false;
+            procConfig.NP2Datmap.ArtifactRemove = [];
+        elseif isempty(procConfig.NP2Datmap.ArtifactRemove)
+            procConfig.NP2Datmap.ArtifactRemove = [1 0 0.1];
         end
         artRem = procConfig.NP2Datmap.ArtifactRemove;
         np2datmap(selDir, baseName, prb, artRem)

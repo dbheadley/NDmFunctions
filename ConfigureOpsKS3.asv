@@ -56,8 +56,3 @@ ops.useRAM              = 0; % not yet available
 
 % time range to sort
 ops.trange = [0 Inf]; 
-
-% now set ops to non-default values based on name value pairs in varargin
-for j = 1:2:length(varargin)
-    ops.(varargin{j}) = varargin{j+1};
-end

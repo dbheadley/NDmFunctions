@@ -19,6 +19,9 @@ function rezFiles = BatchKilosort3(rootDir, datFName, chanData)
     %               separately by kilosort, then recombined. Set this
     %               greater than 1 if you are running out of memory during
     %               the drift correction step.
+    %               OtherOps: an optional structure with each fieldname corresponding
+    %               to one of the configuration arguments in ops and its
+    %               value the desired setting for that configuration.
     
     for j = 1:length(chanData)
         numChans = chanData(j).TotalChans;
@@ -32,18 +35,30 @@ function rezFiles = BatchKilosort3(rootDir, datFName, chanData)
         fs = chanData(j).FS;
         batchSize = chanData(j).BatchSize;
         datashiftOpt = chanData(j).DataShift;
+        
+        % include access to all other op configs here
+        otherOps = {};
+        if isfield(chanData(j),'OtherOps')
+            if ~isempty(chanData(j).OtherOps)
+                opNames = fieldnames(chanData(j).OtherOps);
+                for k = 1:length(opNames)
+                    otherOps{end+1} = opNames{k};
+                    otherOps{end+1} = chanData(j).OtherOps.(opNames{k});
+                end
+            end
+        end
         currDir = fullfile(rootDir, 'Spikes', chanData(j).SiteName);
         mkdir(currDir);
         save(fullfile(currDir, 'ChanTemp.mat'), 'chanMap', 'chanMap0ind', 'connected', 'xcoords', 'ycoords', 'kcoords', 'fs')
         
         
-        ops = ConfigureOpsKS3(currDir, datFName, 'ChanTemp.mat', batchSize, numChans);
+        ops = ConfigureOpsKS3(currDir, datFName, 'ChanTemp.mat', batchSize, numChans,datashiftOpt, otherOps{:});
         
         % preprocess data to create temp_wh.dat
         rez = preprocessDataSub(ops);
         
         % % NEW STEP TO DO DATA REGISTRATION
-        rez = datashift2(rez,datashiftOpt);
+        rez = datashift2(rez,true);
         
         [rez, st3, tF]     = extract_spikes(rez);
 
