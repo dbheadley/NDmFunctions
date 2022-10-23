@@ -136,6 +136,11 @@ function rez = SortSpikes(apFilePath, varargin)
     ops.trange = [0 Inf]; 
 
 %% Run Kilosort
+
+    % set random seed to minimize differences between runs (on different
+    % computers or matlab run histories)
+    rng(0)
+    
     % preprocess data to create temp_wh.dat
     rez = preprocessDataSub(ops);
 
