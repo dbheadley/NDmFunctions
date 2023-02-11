@@ -11,7 +11,8 @@ function rez = SortSpikes(apFilePath, varargin)
     % used for processing.
     % SKIPCATGT: if this argument is present, then the CatGT processing
     % step is skipped. Assumes it was already run in a previous iteration.
-    
+    % TRANGE: a 1x2 array, the time window within which sorting takes
+    % place.
     
     if any(strcmp(varargin, 'NBLOCKS'))
         nBlocks = varargin{find(strcmp(varargin, 'NBLOCKS'))+1};
@@ -42,6 +43,12 @@ function rez = SortSpikes(apFilePath, varargin)
     else
         runCatGT = true;
     end
+    
+    if any(strcmp(varargin, 'TRANGE'))
+        tRange = varargin{find(strcmp(varargin, 'TRANGE'))+1};
+    else
+        tRange = [0 inf];
+    end
 
 %% Run CatGT on AP file to remove common noise
     [dirPath, fileName, ext] = fileparts(apFilePath);
@@ -57,9 +64,9 @@ function rez = SortSpikes(apFilePath, varargin)
     runName = runName{1}{1};
     
     if runCatGT
-        catgtCmd = ['CatGT -dir=' dataDir ' -run=' runName ' -prb=' prbNum ...
-                        ' -prb_fld -g=0 -t=0 -ap -apfilter=butter,2,300,9000 ' ...
-                        ' -gblcar']; 
+        catgtCmd = ['CatGT -dir=' dataDir ' -run=' runName ' -prb=' ...
+            prbNum ' -prb_fld -g=0 -t=0 -ap -apfilter=butter,2,300,9000 ' ...
+            '-gblcar']; 
         dos(catgtCmd);
     end
     
@@ -133,7 +140,7 @@ function rez = SortSpikes(apFilePath, varargin)
     ops.useRAM              = 0; % not yet available
 
     % time range to sort
-    ops.trange = [0 Inf]; 
+    ops.trange = tRange; 
 
 %% Run Kilosort
 
