@@ -13,6 +13,8 @@ function rez = SortSpikes(apFilePath, varargin)
     % step is skipped. Assumes it was already run in a previous iteration.
     % TRANGE: a 1x2 array, the time window within which sorting takes
     % place.
+    % CHANMAPPATH: a string, the path to the .mat file containing the
+    % channel mapping
     
     if any(strcmp(varargin, 'NBLOCKS'))
         nBlocks = varargin{find(strcmp(varargin, 'NBLOCKS'))+1};
@@ -50,6 +52,12 @@ function rez = SortSpikes(apFilePath, varargin)
         tRange = [0 inf];
     end
 
+    if any(strcmp(varargin, 'CHANMAPPATH'))
+        chMapPath = varargin{find(strcmp(varargin, 'CHANMAPPATH'))+1};
+    else
+        chMapPath = [];
+    end
+
 %% Run CatGT on AP file to remove common noise
     [dirPath, fileName, ext] = fileparts(apFilePath);
     fileName = [fileName ext];
@@ -73,11 +81,15 @@ function rez = SortSpikes(apFilePath, varargin)
     binPath = strrep(apFilePath, '_t0', '_tcat'); 
     metaPath = [binPath(1:(end-3)) 'meta'];
     
-    currDir = pwd;
-    cd(dirPath)
-    SGLXMetaToCoordsNoPrompt(metaPath)
-    cd(currDir)
-    coordPath = [binPath(1:(end-4)) '_kilosortChanMap.mat'];
+    if isempty(chMapPath)
+        currDir = pwd;
+        cd(dirPath)
+        SGLXMetaToCoordsNoPrompt(metaPath)
+        cd(currDir)
+        coordPath = [binPath(1:(end-4)) '_kilosortChanMap.mat'];
+    else
+        coordPath = chMapPath;
+    end
     
     [tcatPath, tcatFName, tcatExt] = fileparts(binPath); 
     metaParams = ReadNPMeta([tcatFName tcatExt], tcatPath);
